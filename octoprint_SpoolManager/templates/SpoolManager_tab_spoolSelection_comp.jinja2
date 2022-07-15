@@ -26,22 +26,6 @@ File includes all Templates that are needed for custom Knockout.js components, s
                     <span class="search-clear" data-bind="click: clearFilterSelectionQuery"><i class="fas fa-times"></i></span>
                 </div>
         </span>
-        <span >
-            <div>
-                <label class="checkbox">
-                    <input style="vertical-align:baseline" type="checkbox"
-                           data-bind="checked: hideEmptySpools">
-                    Hide empty spools
-                </label>
-            </div>
-            <div >
-                <label class="checkbox">
-                    <input style="vertical-align:baseline" type="checkbox"
-                           data-bind="checked: hideInActiveSpools">
-                    Hide inactive spools
-                </label>
-            </div>
-        </span>
     </div>
     <div>
         <span class="pull-left">
@@ -129,6 +113,30 @@ File includes all Templates that are needed for custom Knockout.js components, s
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox" data-bind="checkedValue: $data.colorId, checked: $parent.selectedColorsForFilter"></input><span class="color-preview" data-bind="style: {'background-color': $data.color}, attr: { title: $data.colorName }" ></span><span data-bind="text: $data.colorName"></span>
+                                </label>
+                            </div>
+                        </li>
+                    </span>
+                </ul>
+            </span>
+            {# Status - Filter #}
+            <span class="dropdown  tabdrop">
+                |  <a href="#" data-toggle="dropdown" class="dropdown-toggle">Status (<span data-bind="text: buildFilterLabel('status')" ></span>)
+                    <b class="caret"></b></a>
+
+                <ul class="dropdown-menu keep-open" style="padding-left:10px" >
+                    <li>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" data-bind="checked:showAllStatusForFilter , click:doFilterSelectAll($data, 'status')"><i>Show All</i>
+                            </label>
+                        </div>
+                    </li>
+                    <span data-bind="foreach: allStatusFilters">
+                        <li>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" data-bind="checkedValue: $data.key, checked: $parent.selectedStatusForFilter"><span data-bind="text: $data.label"></span>
                                 </label>
                             </div>
                         </li>

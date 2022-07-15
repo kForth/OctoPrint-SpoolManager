@@ -139,7 +139,7 @@ class TestDatabase(unittest.TestCase):
 			"to": 100,
 			"sortColumn": "remaining",
 			"sortOrder": "asc",
-			"filterName": "all",
+			"statusFilter": "all",
 			"materialFilter": "ABS,PLA",
 			"vendorFilter": "all",
 			"colorFilter": "#ff0000;red,#ff0000;keinRot"

@@ -14,8 +14,16 @@ function SpoolsFilterSorter(filterSorterId, spoolsArrayKO) {
 
     // FILTERING
     self.filterSelectionQuery = ko.observable();
-    self.hideEmptySpools = ko.observable();
-    self.hideInActiveSpools = ko.observable();
+    // - Filtering - Status
+    self.allStatusFilters = [
+        { label: 'Hide Empty', key: 'hideEmpty' },
+        { label: 'Hide Inactive', key: 'hideInactive' },
+        { label: 'Hide Active', key: 'hideActive' },
+        { label: 'Hide Templates', key: 'hideTemplates' },
+        { label: 'Only Templates', key: 'onlyTemplates' }
+    ];
+    self.showAllStatusForFilter = ko.observable(true);
+    self.selectedStatusForFilter = ko.observableArray();
     // FILTERING - Catalogs
     self.allColors = ko.observableArray([]);
     // - Filtering - Material
@@ -39,11 +47,8 @@ function SpoolsFilterSorter(filterSorterId, spoolsArrayKO) {
             return false;
         }
 
-        if (localStorage[storageKeyPrefix + "hideEmptySpools"] != null){
-            self.hideEmptySpools(   localStorage[storageKeyPrefix + "hideEmptySpools"] == 'false' ? false : true);
-        }
-        if (localStorage[storageKeyPrefix + "hideInActiveSpools"] != null){
-            self.hideInActiveSpools(localStorage[storageKeyPrefix + "hideInActiveSpools"] == 'false' ? false : true);
+        if (localStorage[storageKeyPrefix + "selectedStatusForFilter"] != null){
+          self.selectedStatusForFilter(self._stringToArray(localStorage[storageKeyPrefix + "selectedStatusForFilter"]));
         }
         // maybe if someone request for it
         // if (localStorage[storageKeyPrefix + "showAllMaterialsForFilter"] != null){
@@ -72,12 +77,8 @@ function SpoolsFilterSorter(filterSorterId, spoolsArrayKO) {
             // damn, no browser storage!!!
             return false;
         }
-        if (self.hideEmptySpools() != null){
-            localStorage[storageKeyPrefix + "hideEmptySpools"] = self.hideEmptySpools();
-        }
-        if (self.hideInActiveSpools() != null){
-            localStorage[storageKeyPrefix + "hideInActiveSpools"] = self.hideInActiveSpools();
-        }
+
+        localStorage[storageKeyPrefix + "selectedStatusForFilter"] = self._arrayToString(self.selectedStatusForFilter());
         // maybe if someone request for it
         // if (self.showAllMaterialsForFilter() != null){
         //     localStorage[storageKeyPrefix + "showAllMaterialsForFilter"] = self.showAllMaterialsForFilter();
@@ -111,14 +112,6 @@ function SpoolsFilterSorter(filterSorterId, spoolsArrayKO) {
     self._loadFilterSelectionsFromBrowserStorage();
 
     ///////////////////////////////////////////////////////////////////// subscribe listeners
-    self.hideEmptySpools.subscribe(function(newValues) {
-        self._executeFilter();
-        self._storeFilterSelectionsToBrowserStorage();
-    });
-    self.hideInActiveSpools.subscribe(function(newValues) {
-        self._executeFilter();
-        self._storeFilterSelectionsToBrowserStorage();
-    });
     self.selectedMaterialsForFilter.subscribe(function(newValues) {
         if (self.selectedMaterialsForFilter().length > 0){
             self.showAllMaterialsForFilter(true);
@@ -142,6 +135,15 @@ function SpoolsFilterSorter(filterSorterId, spoolsArrayKO) {
             self.showAllColorsForFilter(true);
         } else{
             self.showAllColorsForFilter(false);
+        }
+        self._executeFilter();
+        self._storeFilterSelectionsToBrowserStorage();
+    });
+    self.selectedStatusForFilter.subscribe(function(newValues) {
+        if (self.selectedStatusForFilter().length == 0){
+            self.showAllStatusForFilter(true);
+        } else{
+            self.showAllStatusForFilter(false);
         }
         self._executeFilter();
         self._storeFilterSelectionsToBrowserStorage();
@@ -209,6 +211,10 @@ function SpoolsFilterSorter(filterSorterId, spoolsArrayKO) {
         if ("vendor" == filterLabelName){
             return self._evalFilterLabel(self.allVendors(), self.selectedVendorsForFilter());
         }
+        if ("status" == filterLabelName){
+            var showAllSelected = self.selectedStatusForFilter().length == 0;
+            return showAllSelected ? "all" : self.selectedStatusForFilter().length;
+        }
 
         return "not defined:" + filterLabelName;
     }
@@ -249,6 +255,9 @@ function SpoolsFilterSorter(filterSorterId, spoolsArrayKO) {
                     self.selectedColorsForFilter.removeAll();
                 }
                 break;
+            case "status":
+                self.selectedStatusForFilter.removeAll();
+                break;
         }
     }
 
@@ -266,15 +275,6 @@ function SpoolsFilterSorter(filterSorterId, spoolsArrayKO) {
             if (spoolProperties.toLowerCase().indexOf(filterQuery) > -1) {
                 spool.isFilteredForSelection(false);
             } else {
-                spool.isFilteredForSelection(true);
-            }
-            if (self.hideEmptySpools() == true){
-                var isEmpty = spool.remainingWeight == null || spool.remainingWeight() <= 0 ? true : false;
-                if (isEmpty){
-                    spool.isFilteredForSelection(true);
-                }
-            }
-            if (self.hideInActiveSpools() == true && spool.isActive() == false){
                 spool.isFilteredForSelection(true);
             }
 
@@ -305,6 +305,28 @@ function SpoolsFilterSorter(filterSorterId, spoolsArrayKO) {
                                 spool.isFilteredForSelection(true);
                             }
                         }
+                    }
+                }
+            }
+            // Filter against spool status, if not already filtered out
+            if (spool.isFilteredForSelection() != true){
+                var spoolFilters = self.selectedStatusForFilter();
+                if(spoolFilters.length > 0){
+                    var isEmpty = spool.remainingWeight != null && spool.remainingWeight() <= 0;
+                    if (spoolFilters.includes('hideEmpty') && isEmpty){
+                        spool.isFilteredForSelection(true);
+                    }
+                    else if (spoolFilters.includes('hideInactive') && !spool.isActive()){
+                        spool.isFilteredForSelection(true);
+                    }
+                    else if (spoolFilters.includes('hideActive') && spool.isActive()){
+                        spool.isFilteredForSelection(true);
+                    }
+                    else if (spoolFilters.includes('hideTemplates') && spool.isTemplate()){
+                        spool.isFilteredForSelection(true);
+                    }
+                    else if (spoolFilters.includes('onlyTemplates') && !spool.isTemplate()){
+                        spool.isFilteredForSelection(true);
                     }
                 }
             }

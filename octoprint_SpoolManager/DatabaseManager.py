@@ -899,7 +899,6 @@ class DatabaseManager(object):
 
 			sortColumn = tableQuery["sortColumn"]
 			sortOrder = tableQuery["sortOrder"]
-			filterName = tableQuery["filterName"]
 
 			if ("selectedPageSize" in tableQuery and StringUtils.to_native_str(tableQuery["selectedPageSize"]) == "all"):
 				myQuery = SpoolModel.select()
@@ -963,15 +962,28 @@ class DatabaseManager(object):
 
 			# mySqlText = myQuery.sql()
 
-			if ("onlyTemplates" in filterName):
-				myQuery = myQuery.where( (SpoolModel.isTemplate == True) )
-			else:
-				if (filterName == "hideEmptySpools"):
-					myQuery = myQuery.where( (SpoolModel.remainingWeight > 0) | (SpoolModel.remainingWeight == None))
-				if (filterName == "hideInactiveSpools"):
-					myQuery = myQuery.where( (SpoolModel.isActive == True) )
-				if (filterName == "hideEmptySpools,hideInactiveSpools"):
-					myQuery = myQuery.where( ((SpoolModel.remainingWeight > 0) | (SpoolModel.remainingWeight == None)) & (SpoolModel.isActive == True) )
+			if "statusFilter" in tableQuery:
+				statusFilter = tableQuery["statusFilter"].split(",")
+				
+				if "hideEmpty" in statusFilter:
+					myQuery = myQuery.where(
+						(SpoolModel.remainingWeight is None) or 
+						(SpoolModel.remainingWeight > 0)
+					)
+				if "hideInactive" in statusFilter:
+					myQuery = myQuery.where(SpoolModel.isActive == True)
+				if "hideActive" in statusFilter:
+					myQuery = myQuery.where(SpoolModel.isActive == False)
+				if "hideTemplates" in statusFilter:
+					myQuery = myQuery.where(
+						(SpoolModel.isTemplate is not None) and
+						(SpoolModel.isTemplate == False)
+					)
+				if "onlyTemplates" in statusFilter:
+					myQuery = myQuery.where(
+						(SpoolModel.isTemplate is None) or
+						(SpoolModel.isTemplate == True)
+					)
 
 			if ("displayName" == sortColumn):
 				if ("desc" == sortOrder):

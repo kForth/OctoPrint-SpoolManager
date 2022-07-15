@@ -72,7 +72,7 @@ function SpoolManagerEditSpoolDialog(){
         this.databaseId = ko.observable();
         this.isTemplate = ko.observable();
         this.isActive = ko.observable();
-        this.isInActive = ko.observable();
+        this.isInactive = ko.observable();
         this.displayName = ko.observable();
 //        this.vendor = ko.observable();
 //        this.material = ko.observable();
@@ -214,7 +214,7 @@ function SpoolManagerEditSpoolDialog(){
         this.databaseId(updateData.databaseId);
         this.isTemplate(updateData.isTemplate);
         this.isActive(updateData.isActive);
-        this.isInActive(!updateData.isActive);
+        this.isInactive(!updateData.isActive);
         this.displayName(updateData.displayName);
         this.vendor(updateData.vendor);
         this.purchasedFrom(updateData.purchasedFrom);
@@ -764,7 +764,7 @@ function SpoolManagerEditSpoolDialog(){
     this._createSpoolItemForEditing = function(){
         self.spoolItemForEditing = new SpoolItem(null, true);
 
-        self.spoolItemForEditing.isInActive.subscribe(function(newValue){
+        self.spoolItemForEditing.isInactive.subscribe(function(newValue){
             self.spoolItemForEditing.isActive(!newValue);
         });
 
@@ -823,8 +823,7 @@ function SpoolManagerEditSpoolDialog(){
             // reset values for a new spool
             self.spoolItemForEditing.update({});
             // self.spoolItemForEditing.isActive(true);
-            self.spoolItemForEditing.isInActive(false);
-            // self.spoolItemForEditing.isActive(true);
+            self.spoolItemForEditing.isInactive(false);
             self.spoolItemForEditing.isTemplate(false);
             // self.spoolItemForEditing.databaseId(null);
             // self.spoolItemForEditing.costUnit(self.pluginSettings.currencySymbol());
@@ -905,8 +904,8 @@ function SpoolManagerEditSpoolDialog(){
         let spoolItemCopy = ko.mapping.toJS(spoolItem);
         self.spoolItemForEditing.update(spoolItemCopy);
         self.spoolItemForEditing.isTemplate(false);
-        // self.spoolItemForEditing.isActive(true);  is set by 'isInActive'
-        self.spoolItemForEditing.isInActive(false);
+        // self.spoolItemForEditing.isActive(true);  is set by 'isInactive'
+        self.spoolItemForEditing.isInactive(false);
         self.spoolItemForEditing.databaseId(null);
         self.spoolItemForEditing.isSpoolVisible(true);
     }
