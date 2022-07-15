@@ -813,8 +813,8 @@ function SpoolManagerEditSpoolDialog(){
             self.spoolItemForEditing.update({});
             // self.spoolItemForEditing.isActive(true);
             self.spoolItemForEditing.isInActive(false);
-            // self.spoolItemForEditing.isTemplate(false);
             // self.spoolItemForEditing.isActive(true);
+            self.spoolItemForEditing.isTemplate(false);
             // self.spoolItemForEditing.databaseId(null);
             // self.spoolItemForEditing.costUnit(self.pluginSettings.currencySymbol());
             // self.spoolItemForEditing.displayName(null);
