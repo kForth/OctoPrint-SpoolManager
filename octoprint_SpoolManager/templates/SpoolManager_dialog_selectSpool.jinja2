@@ -50,11 +50,8 @@
 {#                <span >#}
 {#                    <label>#}
 {#                        <input style="vertical-align:baseline" type="checkbox"#}
-{#                               data-bind="checked: sidebarFilterSorter.hideEmptySpools">#}
-{#                        Hide empty spools#}
-{#                        <input style="vertical-align:baseline" type="checkbox"#}
-{#                               data-bind="checked: sidebarFilterSorter.hideInActiveSpools">#}
-{#                        Hide inactive spools#}
+{#                                data-bind="foreach: spoolItemTableHelper.allStatusFilters, checkedValue: $data.key, checked: $parent.spoolItemTableHelper.selectedStatusForFilter">#}
+{#                                <span data-bind="text: $data.label"></span>#}
 {#                    </label>#}
 {#                </span>#}
 {#            </div>#}

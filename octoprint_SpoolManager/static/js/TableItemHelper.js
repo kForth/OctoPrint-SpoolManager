@@ -20,12 +20,19 @@ function TableItemHelper(loadItemsFunction, defaultPageSize, defaultSortColumn, 
     // Sorting
     self.sortColumn = ko.observable(defaultSortColumn);
     self.sortOrder = ko.observable("desc");
-    // Filtering - all, hide empty, hide inactive
-    self.filterOptions = ["all", "onlySuccess", "onlyFailed"];
-    self.selectedFilterName = ko.observable(defaultFilterName);
 
-    self.selectedFilterNameArrayKO = ko.observableArray([]);
-
+    // FILTERING
+    // Filtering - Status
+    self.allStatusFilters = [
+        { label: 'Hide Empty', key: 'hideEmpty' },
+        { label: 'Hide Inactive', key: 'hideInactive' },
+        { label: 'Hide Active', key: 'hideActive' },
+        { label: 'Hide Templates', key: 'hideTemplates' },
+        { label: 'Only Templates', key: 'onlyTemplates' }
+    ];
+    self.showAllStatusForFilter = ko.observable(true);
+    self.selectedStatusForFilter = ko.observableArray();
+    // FILTERING - Catalogs
     // Filtering - Material
     self.allMaterials = ko.observableArray([]);
     self.showAllMaterialsForFilter = ko.observable(true);
@@ -64,10 +71,10 @@ function TableItemHelper(loadItemsFunction, defaultPageSize, defaultSortColumn, 
         var vendorFilter = self._evalFilter(self.allVendors(), self.selectedVendorsForFilter());
         var colorFilter = self._evalFilter(self.allColors(), self.selectedColorsForFilter());
 
-        var selectedFilterNamesString = "";
-        var selectedFilterNames = self.selectedFilterNameArrayKO();
-        if (selectedFilterNames.length != 0){
-            selectedFilterNamesString = selectedFilterNames.sort().join();
+        var selectedFilterStatusString = "";
+        var selectedFilterStatus = self.selectedStatusForFilter();
+        if (selectedFilterStatus.length != 0){
+            selectedFilterStatusString = selectedFilterStatus.sort().join();
         }
 
         var tableQuery = {
@@ -76,8 +83,7 @@ function TableItemHelper(loadItemsFunction, defaultPageSize, defaultSortColumn, 
             "to": to,
             "sortColumn": self.sortColumn(),
             "sortOrder": self.sortOrder(),
-            // "filterName": self.selectedFilterName(),
-            "filterName": selectedFilterNamesString,
+            "statusFilter": selectedFilterStatusString,
             "materialFilter": materialFilter,
             "vendorFilter": vendorFilter,
             "colorFilter": colorFilter
@@ -129,7 +135,15 @@ function TableItemHelper(loadItemsFunction, defaultPageSize, defaultSortColumn, 
             // TODO Optimize enable after the values where initialy changed
             self.reloadItems();
         }
-
+    });
+    self.selectedStatusForFilter.subscribe(function(newValues) {
+        if (self.selectedStatusForFilter().length == 0){
+            self.showAllStatusForFilter(true);
+        } else{
+            self.showAllStatusForFilter(false);
+        }
+        // TODO Optimize enable after the values where initialy changed
+        self.reloadItems();
     });
 
     self._evalFilterLabel = function(allArray, selectionArray){
@@ -203,28 +217,6 @@ function TableItemHelper(loadItemsFunction, defaultPageSize, defaultSortColumn, 
     }
 
     // ############################################## FILTERING
-    self.changeFilter = function(newFilterName) {
-        self.selectedFilterName(newFilterName)
-        self.currentPage(0);
-        self._loadItems();
-    };
-
-    self.toggleFilter = function(newFilterName){
-        if (self.selectedFilterNameArrayKO().includes(newFilterName)){
-            self.selectedFilterNameArrayKO.remove(newFilterName);
-        } else {
-            // Add the Filter
-            self.selectedFilterNameArrayKO.push(newFilterName);
-        }
-        self.currentPage(0);
-        self._loadItems();
-    }
-
-    self.isFilterSelected = function(filterName) {
-        // return self.selectedFilterName() == filterName;
-        return self.selectedFilterNameArrayKO().includes(filterName);
-    };
-
     self.doFilterSelectAll = function(data, catalogName){
         let checked;
         switch (catalogName) {
@@ -261,6 +253,9 @@ function TableItemHelper(loadItemsFunction, defaultPageSize, defaultSortColumn, 
                     self.selectedColorsForFilter.removeAll();
                 }
                 break;
+            case "status":
+                self.selectedStatusForFilter.removeAll();
+                break;
         }
     }
 
@@ -287,6 +282,10 @@ function TableItemHelper(loadItemsFunction, defaultPageSize, defaultSortColumn, 
         }
         if ("vendor" == filterLabelName){
             return self._evalFilterLabel(self.allVendors(), self.selectedVendorsForFilter());
+        }
+        if ("status" == filterLabelName){
+            var showAllSelected = self.selectedStatusForFilter().length == 0;
+            return showAllSelected ? "all" : self.selectedStatusForFilter().length;
         }
 
         return "not defined:" + filterLabelName;

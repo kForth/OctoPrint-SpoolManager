@@ -38,17 +38,6 @@
                 </div>
                 <div class="pull-right" style="clear: both;">
                     <small>
-                        Show spools:
-{#                        <a href="#" data-bind="click: function() { spoolItemTableHelper.changeFilter('all'); }"><i class="icon-ok" data-bind="style: {visibility: spoolItemTableHelper.isFilterSelected('all') ? 'visible' : 'hidden'}"></i> all</a> |#}
-                        <a href="#" data-bind="click: function() { spoolItemTableHelper.toggleFilter('hideEmptySpools'); }"><i class="icon-ok" data-bind="style: {visibility: spoolItemTableHelper.isFilterSelected('hideEmptySpools') ? 'visible' : 'hidden'}"></i>hide empty</a> |
-                        <a href="#" data-bind="click: function() { spoolItemTableHelper.toggleFilter('hideInactiveSpools'); }"><i class="icon-ok" data-bind="style: {visibility: spoolItemTableHelper.isFilterSelected('hideInactiveSpools') ? 'visible' : 'hidden'}"></i> hide inactive</a> |
-                        <a href="#" data-bind="click: function() { spoolItemTableHelper.toggleFilter('onlyTemplates'); }"><i class="icon-ok" data-bind="style: {visibility: spoolItemTableHelper.isFilterSelected('onlyTemplates') ? 'visible' : 'hidden'}"></i> only templates</a>
-                    </small>
-                </div>
-
-
-                <div class="pull-right" style="clear: both;">
-                    <small>
                         Filter:
                         {# Material - Filter #}
                         <span class="dropdown  tabdrop">
@@ -117,6 +106,30 @@
                                         <div class="checkbox">
                                             <label>
                                                 <input type="checkbox" data-bind="checkedValue: $data.colorId, checked: $parent.spoolItemTableHelper.selectedColorsForFilter"></input><span class="color-preview" data-bind="style: {'background-color': $data.color}, attr: { title: $data.colorName }" ></span><span data-bind="text: $data.colorName"></span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                </span>
+                            </ul>
+                        </span>
+                        {# Status - Filter #}
+                        <span class="dropdown  tabdrop">
+                            |  <a href="#" data-toggle="dropdown" class="dropdown-toggle">Status (<span data-bind="text: spoolItemTableHelper.buildFilterLabel('status')" ></span>)
+                                <b class="caret"></b></a>
+
+                            <ul class="dropdown-menu keep-open" style="padding-left:10px" >
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" data-bind="checked:spoolItemTableHelper.showAllStatusForFilter , click:spoolItemTableHelper.doFilterSelectAll($data, 'status')"><i>Show All</i>
+                                        </label>
+                                    </div>
+                                </li>
+                                <span data-bind="foreach: spoolItemTableHelper.allStatusFilters">
+                                    <li data-bind="visible: $data.key != ''">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" data-bind="checkedValue: $data.key, checked: $parent.spoolItemTableHelper.selectedStatusForFilter"><span data-bind="text: $data.label"></span>
                                             </label>
                                         </div>
                                     </li>

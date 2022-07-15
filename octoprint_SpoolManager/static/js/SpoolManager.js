@@ -500,21 +500,14 @@ $(function() {
                 self.selectedSpoolsForSidebar.valueHasMutated();
             }
 
-            var currentFilterName = "all";
-            // if (self.pluginSettings!= null){
-            //      if(self.pluginSettings.hideEmptySpoolsInSidebar() == true) {
-            //          currentFilterName = "hideEmptySpools";
-            //      }
-            //      if(self.pluginSettings.hideInactiveSpoolsInSidebar() == true) {
-            //          currentFilterName = "hideInactiveSpools";
-            //      }
-            //      if(self.pluginSettings.hideEmptySpoolsInSidebar() == true && self.pluginSettings.hideInactiveSpoolsInSidebar() == true) {
-            //          currentFilterName = "hideEmptySpools,hideInactiveSpools";
-            //      }
+            var selectedFilterStatusString = "all";
+            // var selectedFilterStatus = self.selectedStatusForFilter();
+            // if (selectedFilterStatus.length != 0){
+            //     selectedFilterStatusString = selectedFilterStatus.sort().join();
             // }
 
             var tableQuery = {
-                filterName: currentFilterName,
+                statusFilter: selectedFilterStatusString,
                 from: 0,
                 to: 3333,
                 sortColumn: "lastUse",
@@ -1029,23 +1022,7 @@ $(function() {
                 self.pluginSettings.qrCodeBackgroundColor(newColorValue);
             });
 
-
-            // self.pluginSettings.hideEmptySpoolsInSidebar.subscribe(function(newCheckedVaue){
-            //     var payload = {
-            //             "hideEmptySpoolsInSidebar": newCheckedVaue
-            //         };
-            //     OctoPrint.settings.savePluginSettings(PLUGIN_ID, payload);
-            //     // self.loadSpoolsForSidebar();
-            //     // self.filterSelectionSidebar();
-            // });
-            // self.pluginSettings.hideInactiveSpoolsInSidebar.subscribe(function(newCheckedVaue){
-            //     var payload = {
-            //             "hideInactiveSpoolsInSidebar": newCheckedVaue
-            //         };
-            //     OctoPrint.settings.savePluginSettings(PLUGIN_ID, payload);
-            //     // self.loadSpoolsForSidebar();
-            //     // self.filterSelectionSidebar();
-            // });
+            // TODO: Subscribe to status filter in sidebar
 
             // needed after the tool-count is changed
             self.settingsViewModel.printerProfiles.currentProfileData.subscribe(self.loadSpoolsForSidebar);
