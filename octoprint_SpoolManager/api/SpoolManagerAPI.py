@@ -382,12 +382,12 @@ class SpoolManagerAPI(octoprint.plugin.BlueprintPlugin):
 						result['filamentNotEnough'].append(infoData)
 					# add every spool for reminding, if more the 0gr is needed
 					result['reminderSpoolSelection'].append(infoData)
-			elif checkForSelectedSpool:
-				if (detailedSpoolResult is not None):
-					if (detailedSpoolResult["requiredLength"] > 0):
-						result['noSpoolSelected'].append(infoData)
-				else:
-					result['noSpoolSelected'].append(infoData)
+			elif checkForSelectedSpool and (
+				spoolModel is None
+				and detailedSpoolResult is not None
+				and detailedSpoolResult["requiredLength"] > 0
+			):
+				result['noSpoolSelected'].append(infoData)
 
 			# 	if (metaNotPresent or
 			# 		attributesMissing or
